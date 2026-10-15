@@ -14,9 +14,13 @@ def main():
     print("Hello from agent!")
 
     parser = argparse.ArgumentParser(description="Chatbot")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
     parser.add_argument("user_prompt", type=str, help="User prompt")
     args = parser.parse_args()
 
+    messages = [
+        {"role": "user", "content": args.user_prompt},
+    ]
 
     client = OpenAI(
         base_url = "https://openrouter.ai/api/v1",
@@ -25,15 +29,16 @@ def main():
 
     response = client.chat.completions.create(
         model="openrouter/free",
-        messages=[
-            {
-                "role": "user",
-                "content": args.user_prompt,
-            }
-        ],
+        messages=messages
     )
-    print(f"Prompt tokens: {response.usage.prompt_tokens}")
-    print(f"Response tokens: {response.usage.completion_tokens}")
+    #print(f"Prompt tokens: {response.usage.prompt_tokens}")
+    #print(f"Response tokens: {response.usage.completion_tokens}")
+
+
+    if args.verbose:
+        print(f"User prompt: {args.user_prompt}")
+        print(f"Prompt tokens: {response.usage.prompt_tokens}")
+        print(f"Response tokens: {response.usage.completion_tokens}")
 
     print(response.choices[0].message.content)
 
