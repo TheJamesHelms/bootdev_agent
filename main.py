@@ -4,7 +4,7 @@ from openai import OpenAI
 import argparse
 from prompts import system_prompt
 import call_function
-from functions import get_files_info
+from functions import get_files_info, get_file_content, run_python_file, write_file
 import json
 
 load_dotenv()
@@ -40,13 +40,14 @@ def main():
     #print(f"Prompt tokens: {response.usage.prompt_tokens}")
     #print(f"Response tokens: {response.usage.completion_tokens}")
 
-
-    if args.verbose:
-        print(f"User prompt: {args.user_prompt}")
-        print(f"Prompt tokens: {response.usage.prompt_tokens}")
-        print(f"Response tokens: {response.usage.completion_tokens}")
-
     message = response.choices[0].message
+    if message.content:
+        if args.verbose:
+            #print(f"User prompt: {args.user_prompt}")
+            #print(f"Prompt tokens: {response.usage.prompt_tokens}")
+            #print(f"Response tokens: {response.usage.completion_tokens}")
+            print("verbose")
+
     if message.tool_calls:
         for tool_call in message.tool_calls:
             function_args = json.loads(tool_call.function.arguments or "{}")

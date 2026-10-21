@@ -33,3 +33,27 @@ def run_python_file(
 
     except Exception as e:
         print(f"Error: {e}")
+
+schemma_run_python_file = {
+    "type": "function",
+    "function": {
+        "name": "run_python_file",
+        "description": "Runs the python located at the file path provided and passing in the arguments from args",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "File path to python file to run, relative to the working directory (default is the working directory itself)",
+                },
+                "args": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Arguments to pass to the function to be called"
+                }
+            },
+        },
+    },
+}
