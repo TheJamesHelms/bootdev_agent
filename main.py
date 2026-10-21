@@ -21,6 +21,7 @@ def main():
     parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
     parser.add_argument("user_prompt", type=str, help="User prompt")
     args = parser.parse_args()
+    #print(f"verbose: {args.verbose}")
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -41,19 +42,23 @@ def main():
     #print(f"Response tokens: {response.usage.completion_tokens}")
 
     message = response.choices[0].message
-    if message.content:
-        if args.verbose:
-            #print(f"User prompt: {args.user_prompt}")
-            #print(f"Prompt tokens: {response.usage.prompt_tokens}")
-            #print(f"Response tokens: {response.usage.completion_tokens}")
-            print("verbose")
+    result_message = ""
 
     if message.tool_calls:
         for tool_call in message.tool_calls:
             function_args = json.loads(tool_call.function.arguments or "{}")
-            print(f"Calling function: {tool_call.function.name}({function_args})")
+            #print(f"Calling function: {tool_call.function.name}({function_args})")
+            result_message = call_function.call_function(tool_call, args.verbose)
+            if not result_message['content']:
+                raise Exception("Error: tool call returned no content")
+            if args.verbose:
+                print(f"-> {result_message['content']}")
     else:
         print(response.choices[0].message.content)
+
+
+
+
 
 if __name__ == "__main__":
     main()

@@ -10,7 +10,7 @@ available_functions = [
 ]
 
 def call_function(tool_call, verbose: bool = False) -> dict:
-    function_name = tool_call.function_name
+    function_name = tool_call.function.name
     function_args = json.loads(tool_call.function.arguments or "{}")
     if verbose:
         print(f" - Calling function: {function_name}({function_args})")
@@ -18,14 +18,15 @@ def call_function(tool_call, verbose: bool = False) -> dict:
         print(f" - Calling function: {function_name}")
 
     function_map: dict[str, Callable[..., str]] = {
-        "get_file_content": get_file_content,
-        "get_files_info": get_files_info,
-        "run_python_file": run_python_file,
-        "write_file": write_file,
+        "get_file_content": get_file_content.get_file_content,
+        "get_files_info": get_files_info.get_files_info,
+        "run_python_file": run_python_file.run_python_file,
+        "write_file": write_file.write_file,
     }
 
     if function_name in function_map:
         function_args["working_directory"] = "./calculator"
+        #print(f"---------> {function_map[function_name]}{function_args}")
         result = function_map[function_name](**function_args)
         return {
             "role": "tool",
