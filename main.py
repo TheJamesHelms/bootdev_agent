@@ -32,30 +32,36 @@ def main():
         base_url = "https://openrouter.ai/api/v1",
         api_key = api_key,
     )
+    for _ in range(20):
+        response = client.chat.completions.create(
+            model="openrouter/free",
+            messages=messages,
+            tools=call_function.available_functions,
+        )
+        #print(f"Prompt tokens: {response.usage.prompt_tokens}")
+        #print(f"Response tokens: {response.usage.completion_tokens}")
 
-    response = client.chat.completions.create(
-        model="openrouter/free",
-        messages=messages,
-        tools=call_function.available_functions,
-    )
-    #print(f"Prompt tokens: {response.usage.prompt_tokens}")
-    #print(f"Response tokens: {response.usage.completion_tokens}")
+        message = response.choices[0].message
+        messages.append(message)
+        result_message = ""
 
-    message = response.choices[0].message
-    result_message = ""
-
-    if message.tool_calls:
-        for tool_call in message.tool_calls:
-            function_args = json.loads(tool_call.function.arguments or "{}")
-            #print(f"Calling function: {tool_call.function.name}({function_args})")
-            result_message = call_function.call_function(tool_call, args.verbose)
-            if not result_message['content']:
-                raise Exception("Error: tool call returned no content")
-            if args.verbose:
-                print(f"-> {result_message['content']}")
-    else:
-        print(response.choices[0].message.content)
-
+        if message.tool_calls:
+            for tool_call in message.tool_calls:
+                function_args = json.loads(tool_call.function.arguments or "{}")
+                #print(f"Calling function: {tool_call.function.name}({function_args})")
+                result_message = call_function.call_function(tool_call, args.verbose)
+                if not result_message['content']:
+                    raise Exception("Error: tool call returned no content")
+                if args.verbose:
+                    print(f"-> {result_message['content']}")
+                messages.append(result_message)
+        else:
+            print(response.choices[0].message.content)
+            break
+        #print(_)
+        if _ == 19:
+            print("Error: failed to return a final message withing loop limit")
+            exit(1)
 
 
 
