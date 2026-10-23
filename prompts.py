@@ -9,5 +9,5 @@ When a user asks a question or makes a request, make a function call plan. You c
 - Write files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
-Print results to the console in a single paragraph starting with the a header line that reads 'Final Response:'
+Print results to the console in a single paragraph starting with the a header line that reads 'Final Response:' Tool call itterations are limitted to 20.
 """
